@@ -11,22 +11,22 @@ from multiprocessing import Pool
 
 np.set_printoptions(linewidth=500)
 
-NUM_TRIALS = 1
-MAX_DIMENSIONS = 3
-MAX_SIZE = 5
+NUM_TRIALS = 10
+MAX_DIMENSIONS = 10
+MAX_SIZE = 10
 
 HEURISTICS = [
-    # "canberra",
-    # "chebyshev",
-    # "cityblock",
+    "canberra",
+    "chebyshev",
+    "cityblock",
     "cosine",
-    # "euclidean",
-    # "hamming",
-    # "minkowski-0.5n",
-    # "minkowski-n",
+    "euclidean",
+    "hamming",
+    "minkowski-0.5n",
+    "minkowski-n",
     "null",
-    # "seuclidean",
-    # "sqeuclidean"
+    "seuclidean",
+    "sqeuclidean"
 ]
 
 iterations = {}
@@ -58,29 +58,24 @@ def run_trial(num_dimensions):
     for heuristic in HEURISTICS:
         print "progress: " + str(progress) + "/" + str(total)
         progress += 1
-        # print "run"
         start_time = time.clock()
         path, num_iterations = find_path(grid, start, stop, heuristic)
         elapsed_time = time.clock() - start_time
 
         # runtime
-        # print "runtime"
         runtime[heuristic].append([])
         runtime[heuristic][-1].append(elapsed_time)
 
         # optimal path
-        # print "optimal"
         error[heuristic].append([])
         path_length[heuristic] = sum([cell.total_cost for cell in path])
         if path_length[heuristic] < optimal_path_cost:
             optimal_path_cost = path_length[heuristic]
 
         # cells expanded
-        # print "iter"
         iterations[heuristic].append([])
         iterations[heuristic][-1].append(num_iterations)
 
-        # print "reset"
         grid.reset()
 
     for heuristic in HEURISTICS:
@@ -88,39 +83,21 @@ def run_trial(num_dimensions):
 
 if __name__ == "__main__":
     try:
-        # pool = Pool(10)
         for dimensions in range(2, MAX_DIMENSIONS + 1):
             for trial in range(0, NUM_TRIALS):
-                # pool.apply(run_trial, (dimensions,))
                 run_trial(dimensions)
 
     except MemoryError as me:
         print me
 
-    # print iterations
-    # print error
-    # print runtime
-
     for heuristic in HEURISTICS:
         for i, trial in enumerate(iterations[heuristic]):
             iterations[heuristic][i] = float(sum(iterations[heuristic][i]) / NUM_TRIALS)
-            # trial = float(sum(trial)) / NUM_TRIALS
         for i, trial in enumerate(error[heuristic]):
             error[heuristic][i] = float(sum(error[heuristic][i]) / NUM_TRIALS)
-            # trial = float(sum(trial)) / NUM_TRIALS
         for i, trial in enumerate(runtime[heuristic]):
             runtime[heuristic][i] = float(sum(runtime[heuristic][i]) / NUM_TRIALS)
-            # trial = float(sum(trial)) / NUM_TRIALS
-        # for i in range(MAX_DIMENSIONS - 1):
-            # print heuristic, i
-            # iterations[heuristic][i] = float(sum(iterations[heuristic][i]) / NUM_TRIALS)
-            # error[heuristic][i] = float(sum(error[heuristic][i]) / NUM_TRIALS)
-            # runtime[heuristic][i] = float(sum(runtime[heuristic][i]) / NUM_TRIALS)
         print heuristic, error[heuristic], iterations[heuristic], runtime[heuristic]
-
-    # print iterations
-    # print error
-    # print runtime
 
     plt.rc('lines', linestyle='-')
     plt.rc('font', family='serif', serif='Helvetica Neue')
@@ -130,7 +107,6 @@ if __name__ == "__main__":
     dims = np.arange(2, MAX_DIMENSIONS + 1, 1)
     for heuristic in HEURISTICS:
         for i, data in [[0, iterations], [1, error], [2, runtime]]:
-            # print dims, data[heuristic]
             axarr[i].plot(dims, data[heuristic], label=heuristic)
 
     axarr[0].set_title("Efficiency")
@@ -140,7 +116,6 @@ if __name__ == "__main__":
     fig.text(0.04, 0.77, 'Iterations Used', ha='center', va='center', rotation='vertical')
     fig.text(0.04, 0.50, '% Cost Error', ha='center', va='center', rotation='vertical')
     fig.text(0.04, 0.22, 'Seconds', ha='center', va='center', rotation='vertical')
-    # fig.legend(loc="best", frameon=False)
     axarr[1].legend(bbox_to_anchor=(1.05, 0.55), loc=2, borderaxespad=0.)
 
     plt.show()
