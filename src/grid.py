@@ -17,7 +17,9 @@ class Grid:
 
     def get_cell(self, coordinates):
         coordinates = tuple(coordinates)
-        if not self.grid[coordinates] is Cell:
+        if not isinstance(self.grid[coordinates], Cell):
+        # if not self.fill and not self.grid[coordinates] is Cell:
+            print "add cell"
             self.grid[coordinates] = Cell(self, coordinates)
         return self.grid[tuple(coordinates)]
 
@@ -37,7 +39,7 @@ class Grid:
                              op_flags=['readwrite'])
         for cell in iterator:
             new_cell = Cell(self, iterator.multi_index)
-            if cell is None or str(cell) == "None":
+            if not self.fill and (cell is None or str(cell) == "None"):
                 pass
             else:
                 new_cell.cost = float(str(cell))
