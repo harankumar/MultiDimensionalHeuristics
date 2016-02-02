@@ -8,7 +8,7 @@ from random import random, randint
 import time
 import matplotlib.pyplot as plt
 from multiprocessing import *
-from filelock import *
+import fasteners
 
 np.set_printoptions(linewidth=500)
 
@@ -44,9 +44,12 @@ HEURISTICS = [
 # progress = 0
 
 
+lock = fasteners.ReaderWriterLock()
+
+
 def write(message):
     print "computed: " + message
-    with FileLock(OUT_FILE):
+    with lock.write_lock():
         print "lock acquired"
         output = open(OUT_FILE, "a+")
         output.write(message + "\n")
@@ -120,33 +123,33 @@ if __name__ == "__main__":
         print me
 
     time.sleep(SLEEP_TIME)
-        #
-        # for heuristic in HEURISTICS:
-        #     for i, trial in enumerate(iterations[heuristic]):
-        #         iterations[heuristic][i] = float(sum(iterations[heuristic][i]) / NUM_TRIALS)
-        #     for i, trial in enumerate(error[heuristic]):
-        #         error[heuristic][i] = float(sum(error[heuristic][i]) / NUM_TRIALS)
-        #     for i, trial in enumerate(runtime[heuristic]):
-        #         runtime[heuristic][i] = float(sum(runtime[heuristic][i]) / NUM_TRIALS)
-        #     print heuristic, error[heuristic], iterations[heuristic], runtime[heuristic]
-        #
-        # plt.rc('lines', linestyle='-')
-        # plt.rc('font', family='serif', serif='Helvetica Neue')
-        # plt.rc('figure.subplot', right=0.8)
-        #
-        # fig, axarr = plt.subplots(3, sharex=True)
-        # dims = np.arange(2, MAX_DIMENSIONS + 1, 1)
-        # for heuristic in HEURISTICS:
-        #     for i, data in [[0, iterations], [1, error], [2, runtime]]:
-        #         axarr[i].plot(dims, data[heuristic], label=heuristic)
-        #
-        # axarr[0].set_title("Efficiency")
-        # axarr[1].set_title("Optimality")
-        # axarr[2].set_title("Runtime")
-        # fig.text(0.35, 0.04, 'Number of Dimensions')
-        # fig.text(0.04, 0.77, 'Iterations Used', ha='center', va='center', rotation='vertical')
-        # fig.text(0.04, 0.50, '% Cost Error', ha='center', va='center', rotation='vertical')
-        # fig.text(0.04, 0.22, 'Seconds', ha='center', va='center', rotation='vertical')
-        # axarr[1].legend(bbox_to_anchor=(1.05, 0.55), loc=2, borderaxespad=0.)
-        #
-        # plt.show()
+    #
+    # for heuristic in HEURISTICS:
+    #     for i, trial in enumerate(iterations[heuristic]):
+    #         iterations[heuristic][i] = float(sum(iterations[heuristic][i]) / NUM_TRIALS)
+    #     for i, trial in enumerate(error[heuristic]):
+    #         error[heuristic][i] = float(sum(error[heuristic][i]) / NUM_TRIALS)
+    #     for i, trial in enumerate(runtime[heuristic]):
+    #         runtime[heuristic][i] = float(sum(runtime[heuristic][i]) / NUM_TRIALS)
+    #     print heuristic, error[heuristic], iterations[heuristic], runtime[heuristic]
+    #
+    # plt.rc('lines', linestyle='-')
+    # plt.rc('font', family='serif', serif='Helvetica Neue')
+    # plt.rc('figure.subplot', right=0.8)
+    #
+    # fig, axarr = plt.subplots(3, sharex=True)
+    # dims = np.arange(2, MAX_DIMENSIONS + 1, 1)
+    # for heuristic in HEURISTICS:
+    #     for i, data in [[0, iterations], [1, error], [2, runtime]]:
+    #         axarr[i].plot(dims, data[heuristic], label=heuristic)
+    #
+    # axarr[0].set_title("Efficiency")
+    # axarr[1].set_title("Optimality")
+    # axarr[2].set_title("Runtime")
+    # fig.text(0.35, 0.04, 'Number of Dimensions')
+    # fig.text(0.04, 0.77, 'Iterations Used', ha='center', va='center', rotation='vertical')
+    # fig.text(0.04, 0.50, '% Cost Error', ha='center', va='center', rotation='vertical')
+    # fig.text(0.04, 0.22, 'Seconds', ha='center', va='center', rotation='vertical')
+    # axarr[1].legend(bbox_to_anchor=(1.05, 0.55), loc=2, borderaxespad=0.)
+    #
+    # plt.show()
