@@ -7,7 +7,7 @@ from grid import *
 from random import random, randint
 import time
 import matplotlib.pyplot as plt
-from multiprocessing import Pool, cpu_count
+from multiprocessing import *
 from filelock import *
 
 np.set_printoptions(linewidth=500)
@@ -45,16 +45,19 @@ HEURISTICS = [
 
 
 def write(message):
+    print "computed: " + message
     with FileLock(OUT_FILE):
-        print message
+        print "lock acquired"
         output = open(OUT_FILE, "a+")
         output.write(message + "\n")
         output.close()
+        print "written: " + message
 
 
 def run_trial(num_dimensions):
     # global total, progress, HEURISTICS, iterations, runtime, error
     global HEURISTICS
+    print "running trial"
     error, runtime, iterations = {}, {}, {}
     # Initialize Grid
     fill = MAX_SIZE ** num_dimensions < 1000
