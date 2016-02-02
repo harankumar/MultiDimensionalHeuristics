@@ -17,9 +17,7 @@ class Grid:
 
     def get_cell(self, coordinates):
         coordinates = tuple(coordinates)
-        if not isinstance(self.grid[coordinates], Cell):
-        # if not self.fill and not self.grid[coordinates] is Cell:
-            print "add cell"
+        if not self.fill and not isinstance(self.grid[coordinates], Cell):
             self.grid[coordinates] = Cell(self, coordinates)
         return self.grid[tuple(coordinates)]
 
