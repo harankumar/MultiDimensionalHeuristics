@@ -33,16 +33,21 @@ class Grid:
         return self.get_cell([randint(0, x - 1) for x in self.dimensions])
 
     def reset(self):
+        # print "resetting"
         iterator = np.nditer(self.grid,
                              flags=['refs_ok', 'multi_index'],
                              op_flags=['readwrite'])
         for cell in iterator:
-            new_cell = Cell(self, iterator.multi_index)
+            # new_cell = Cell(self, iterator.multi_index)
             if not self.filled and (cell is None or str(cell) == "None"):
                 pass
             else:
-                new_cell.cost = float(str(cell))
-            cell[...] = new_cell
+                self.grid[tuple(iterator.multi_index)].reset()
+            #     new_cell.cost = float(str(cell))
+            # cell[...] = new_cell
+            # print cell
+            # print cell[...]
+            # print cell[...].coordinates
 
 
 class Cell:
@@ -84,3 +89,17 @@ class Cell:
         neighbours = neighbours[valid]
 
         return [self.grid.get_cell(coordinates) for coordinates in neighbours]
+
+    def reset(self):
+        self.visited_from_start = False
+        self.visited_from_goal = False
+        self.closed = False
+
+        self.previous = None
+        self.successor = None
+
+        self.cost_to = 100000000.0
+        self.cost_from = 100000000.0
+        self.predicted_cost_from = 100000000.0
+        self.predicted_cost_to = 100000000.0
+        self.total_cost = 200000000.0

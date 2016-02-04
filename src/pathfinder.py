@@ -24,7 +24,7 @@ def find_path(grid, start_cell, goal_cell, heuristic):
         else:
             return pdist([p1, p2], name)
 
-    print "started pathfinding"
+    # print "started pathfinding"
 
     start_frontier = PriorityQueue()
     start_cell.cost_to = start_cell.cost
@@ -39,9 +39,10 @@ def find_path(grid, start_cell, goal_cell, heuristic):
         num_iterations += 1
         current_start_cell = start_frontier.get()
         current_goal_cell = goal_frontier.get()
-        print(str(current_start_cell) + " " + str(current_goal_cell))
+        # print(str(current_start_cell) + " " + str(current_goal_cell))
 
         if current_start_cell == current_goal_cell:
+            # print "0"
             path = []
             while current_start_cell.previous is not None:
                 path.append(current_start_cell)
@@ -49,13 +50,13 @@ def find_path(grid, start_cell, goal_cell, heuristic):
             path.append(current_start_cell)
             path.reverse()
             path.append(current_goal_cell)
-            while current_goal_cell.successor is not None:
+            while not current_goal_cell.successor == goal_cell:
                 path.append(current_goal_cell)
                 current_goal_cell = current_goal_cell.successor
             return path, num_iterations
 
         if current_start_cell.visited_from_goal:
-            print "1"
+            # print "1"
             path = []
             current = current_start_cell
             while not current == goal_cell:
@@ -70,7 +71,7 @@ def find_path(grid, start_cell, goal_cell, heuristic):
             return path, num_iterations
 
         if current_goal_cell.visited_from_start:
-            print "2"
+            # print "2"
             path = []
             current = current_goal_cell
             while current.previous is not None:
@@ -127,7 +128,10 @@ def find_path(grid, start_cell, goal_cell, heuristic):
                 neighbor.total_cost = neighbor.cost_from + neighbor.predicted_cost_to
 
                 if visited:
-                    goal_frontier.queue.remove(neighbor)
+                    try:
+                        goal_frontier.queue.remove(neighbor)
+                    except ValueError:
+                        pass
                 goal_frontier.put(neighbor)
 
 
