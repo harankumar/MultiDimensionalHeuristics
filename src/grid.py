@@ -12,12 +12,13 @@ class Grid:
         self.num_dimensions = len(dimensions)
         self.grid = np.ndarray(dimensions, dtype=object)
         self.shape = self.grid.shape
+        self.filled = fill
         if fill:
             self.fill()
 
     def get_cell(self, coordinates):
         coordinates = tuple(coordinates)
-        if not self.fill and not isinstance(self.grid[coordinates], Cell):
+        if not self.filled and not isinstance(self.grid[coordinates], Cell):
             self.grid[coordinates] = Cell(self, coordinates)
         return self.grid[tuple(coordinates)]
 
@@ -37,7 +38,7 @@ class Grid:
                              op_flags=['readwrite'])
         for cell in iterator:
             new_cell = Cell(self, iterator.multi_index)
-            if not self.fill and (cell is None or str(cell) == "None"):
+            if not self.filled and (cell is None or str(cell) == "None"):
                 pass
             else:
                 new_cell.cost = float(str(cell))
@@ -49,13 +50,18 @@ class Cell:
         self.grid = grid
         self.coordinates = coordinates
 
-        self.cost = 1 + random()
-        self.visited = False
+        self.cost = 2 * random()
+        self.visited_from_start = False
+        self.visited_from_goal = False
         self.closed = False
-        self.previous = None
 
-        self.known_cost = 100000000.0
-        self.predicted_cost = 100000000.0
+        self.previous = None
+        self.successor = None
+
+        self.cost_to = 100000000.0
+        self.cost_from = 100000000.0
+        self.predicted_cost_from = 100000000.0
+        self.predicted_cost_to = 100000000.0
         self.total_cost = 200000000.0
 
     def __str__(self):

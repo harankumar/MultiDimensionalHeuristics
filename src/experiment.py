@@ -15,7 +15,7 @@ np.set_printoptions(linewidth=500)
 SLEEP_TIME = 24 * 3600
 NUM_TRIALS = 10
 MAX_DIMENSIONS = 10
-MAX_SIZE = 15
+SIZE = 4
 OUT_FILE = "../out/data.txt"
 
 HEURISTICS = [
@@ -50,11 +50,11 @@ lock = fasteners.ReaderWriterLock()
 def write(message):
     print "computed: " + message
     with lock.write_lock():
-        print "lock acquired"
+        # print "lock acquired"
         output = open(OUT_FILE, "a+")
         output.write(message + "\n")
         output.close()
-        print "written: " + message
+        # print "written: " + message
 
 
 def run_trial(num_dimensions):
@@ -63,13 +63,19 @@ def run_trial(num_dimensions):
     print "running trial"
     error, runtime, iterations = {}, {}, {}
     # Initialize Grid
-    fill = MAX_SIZE ** num_dimensions < 1000
+    fill = False #SIZE ** num_dimensions < 1000
     # print fill
-    grid = Grid([randint(3, MAX_SIZE + 1) for i in range(num_dimensions)], fill=fill)
+    grid = Grid([SIZE for i in range(num_dimensions)], fill=fill)
+    print "made grid"
     # num_nodes = grid.grid.size
-    start = grid.random_coordinate()
-    stop = grid.random_coordinate()
+    # start = grid.random_coordinate()
+    start = grid.get_cell([0 for i in range(num_dimensions)])
+    # stop = grid.random_coordinate()
+    stop = grid.get_cell([SIZE - 1 for i in range(num_dimensions)])
     while start == stop:
+        print "gonna find a new coordinate"
+        print start.coordinates
+        print stop.coordinates
         stop = grid.random_coordinate()
 
     path_length = {}
@@ -78,12 +84,12 @@ def run_trial(num_dimensions):
     optimal_path_cost = 1000000000000000000000000000000000
     # run each heuristic, count cells expanded, and physical time it took
     for heuristic in HEURISTICS:
-        # print grid.grid
+        print heuristic
         # print "progress: " + str(progress) + "/" + str(total)
         # progress += 1
         start_time = time.clock()
         path, num_iterations = find_path(grid, start, stop, heuristic)
-        # print [str(i) for i in path]
+        print [str(i) for i in path]
         elapsed_time = time.clock() - start_time
 
         # runtime
@@ -111,18 +117,19 @@ def run_trial(num_dimensions):
 
 
 if __name__ == "__main__":
-    try:
-        print("heuristic, dimensions, error, runtime, iterations")
-        pool = Pool(cpu_count())
-        for dimensions in range(2, MAX_DIMENSIONS + 1):
-            for trial in range(0, NUM_TRIALS):
-                # run_trial(dimensions)
-                pool.apply_async(run_trial, (dimensions,))
+    run_trial(5)
+    # try:
+    #     print("heuristic, dimensions, error, runtime, iterations")
+    #     pool = Pool(cpu_count())
+        # for dimensions in range(2, MAX_DIMENSIONS + 1):
+        #     for trial in range(0, NUM_TRIALS):
+        #         run_trial(dimensions)
+        #         pool.apply_async(run_trial, (dimensions,))
+    #
+    # except MemoryError as me:
+    #     print me
 
-    except MemoryError as me:
-        print me
-
-    time.sleep(SLEEP_TIME)
+    # time.sleep(SLEEP_TIME)
     #
     # for heuristic in HEURISTICS:
     #     for i, trial in enumerate(iterations[heuristic]):
